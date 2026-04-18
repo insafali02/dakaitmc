@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import { cn } from "@/lib/utils";
+import { cn, resolveImageSrc } from "@/lib/utils";
 
 export type PixelItem = {
   src: string;
@@ -32,7 +32,7 @@ export function PixelGallery({
           )}
         >
           <Image
-            src={item.src}
+            src={resolveImageSrc(item.src)}
             alt={item.title}
             width={1024}
             height={576}

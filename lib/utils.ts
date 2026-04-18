@@ -31,3 +31,34 @@ export function resolveActionUrl(url: string | null | undefined, discordUrl: str
   if (!url || url === "#") return discordUrl;
   return url;
 }
+
+function trimTrailingSlash(value: string) {
+  return value.replace(/\/+$/, "");
+}
+
+export function resolveImageSrc(
+  src: string | null | undefined,
+  fallback = "/media/minecraft/dungeons-main.png"
+) {
+  if (!src) return fallback;
+
+  const normalized = src.trim().replace(/\\/g, "/");
+  if (!normalized) return fallback;
+
+  if (/^https?:\/\//i.test(normalized)) return normalized;
+  if (normalized.startsWith("/")) return normalized;
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (supabaseUrl) {
+    const base = trimTrailingSlash(supabaseUrl);
+    const cleanPath = normalized.replace(/^\/+/, "");
+
+    if (cleanPath.startsWith("storage/v1/object/public/")) {
+      return `${base}/${cleanPath}`;
+    }
+
+    return `${base}/storage/v1/object/public/media/${cleanPath}`;
+  }
+
+  return `/${normalized.replace(/^\/+/, "")}`;
+}
