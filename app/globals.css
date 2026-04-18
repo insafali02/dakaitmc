@@ -1,0 +1,259 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --coal: #03050c;
+  --ash: #0b1228;
+  --sand: #eff4ff;
+  --ember: #ff4747;
+  --rust: #ff921f;
+  --steel: #121a32;
+  --smoke: #9bb0e8;
+  --azure: #30a3ff;
+  --frost: #f8fbff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  background: #03050c;
+  color: #eef2ff;
+  letter-spacing: 0.01em;
+}
+
+body::selection {
+  background: rgba(47, 159, 255, 0.35);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.battlefield-surface {
+  position: relative;
+  isolation: isolate;
+  background: linear-gradient(180deg, #03050c 0%, #060d1f 45%, #04070f 100%);
+}
+
+.battlefield-surface::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background: linear-gradient(168deg, rgba(8, 13, 32, 0.9) 0%, rgba(7, 11, 26, 0.62) 40%, rgba(2, 4, 11, 0.95) 100%);
+  background-position: center;
+  filter: saturate(1.08) contrast(1.02) brightness(0.76);
+  animation: dungeon-pan 34s ease-in-out infinite alternate;
+}
+
+.battlefield-surface::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 16% 16%, rgba(255, 71, 71, 0.18), transparent 40%),
+    radial-gradient(circle at 88% 24%, rgba(48, 163, 255, 0.16), transparent 42%),
+    radial-gradient(circle at 58% 102%, rgba(255, 146, 31, 0.15), transparent 52%);
+  background-position: center;
+  opacity: 0.82;
+  filter: saturate(1.04);
+  animation: dungeon-float 44s linear infinite;
+}
+
+.grain-overlay {
+  position: relative;
+}
+
+.grain-overlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.14;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 3px 3px;
+}
+
+.section-shell {
+  @apply mx-auto w-full max-w-[1180px] px-5 md:px-8;
+}
+
+.metal-panel {
+  @apply relative overflow-hidden border border-white/15 bg-white/[0.035] backdrop-blur-md transition duration-300;
+  box-shadow:
+    0 18px 45px rgba(6, 10, 24, 0.62),
+    inset 0 1px 0 rgba(246, 248, 255, 0.1),
+    inset 0 -12px 35px rgba(41, 74, 145, 0.2);
+}
+
+.metal-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    linear-gradient(135deg, rgba(255, 74, 74, 0.28), transparent 54%),
+    linear-gradient(225deg, rgba(47, 159, 255, 0.2), transparent 62%);
+  transition: opacity 260ms ease;
+}
+
+.metal-panel:hover {
+  transform: translateY(-3px);
+  border-color: rgba(246, 248, 255, 0.45);
+  box-shadow:
+    0 24px 60px rgba(6, 10, 24, 0.75),
+    0 0 18px rgba(255, 74, 74, 0.25),
+    0 0 22px rgba(47, 159, 255, 0.28),
+    inset 0 1px 0 rgba(246, 248, 255, 0.15),
+    inset 0 -12px 35px rgba(41, 74, 145, 0.3);
+}
+
+.metal-panel:hover::after {
+  opacity: 1;
+}
+
+.outlaw-heading {
+  @apply font-heading uppercase tracking-[0.12em] text-sand;
+}
+
+.bubble-particle {
+  position: absolute;
+  bottom: -10%;
+  border-radius: 999px;
+  border: 1px solid rgba(248, 251, 255, 0.35);
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(248, 251, 255, 0.45) 0%,
+    rgba(48, 163, 255, 0.24) 44%,
+    rgba(48, 163, 255, 0.08) 100%
+  );
+  box-shadow:
+    inset 0 0 8px rgba(248, 251, 255, 0.28),
+    0 0 18px rgba(48, 163, 255, 0.24);
+}
+
+.bubble-particle::after {
+  content: "";
+  position: absolute;
+  left: 22%;
+  top: 18%;
+  width: 24%;
+  height: 24%;
+  border-radius: 999px;
+  background: rgba(248, 251, 255, 0.65);
+  filter: blur(1px);
+}
+
+.signal-pill {
+  @apply rounded-full border border-white/25 bg-white/10 px-3 py-1 text-[0.65rem] uppercase tracking-[0.14em] text-sand;
+  opacity: 0.78;
+}
+
+.burn-line {
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 74, 74, 0.9) 30%,
+    rgba(47, 159, 255, 0.95) 60%,
+    rgba(255, 138, 29, 0.9) 78%,
+    transparent 100%
+  );
+}
+
+.pixel-frame {
+  box-shadow:
+    0 14px 40px rgba(3, 7, 21, 0.62),
+    inset 0 1px 0 rgba(246, 248, 255, 0.15);
+}
+
+.pixel-tone-red {
+  border-color: rgba(255, 74, 74, 0.55);
+}
+
+.pixel-tone-blue {
+  border-color: rgba(47, 159, 255, 0.55);
+}
+
+.pixel-tone-orange {
+  border-color: rgba(255, 138, 29, 0.6);
+}
+
+.pixel-tone-white {
+  border-color: rgba(246, 248, 255, 0.6);
+}
+
+.pixel-frame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    linear-gradient(120deg, rgba(255, 74, 74, 0.26), transparent 52%),
+    linear-gradient(240deg, rgba(47, 159, 255, 0.24), transparent 58%);
+  transition: opacity 260ms ease;
+}
+
+.pixel-frame:hover::before {
+  opacity: 1;
+}
+
+.pixel-float {
+  animation: float-y 6s ease-in-out infinite;
+}
+
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes dungeon-pan {
+  0% {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: scale(1.06) translate3d(1.5%, -1%, 0);
+  }
+  100% {
+    transform: scale(1.12) translate3d(-1.5%, 1.2%, 0);
+  }
+}
+
+@keyframes dungeon-float {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(1.2%, -0.8%, 0) scale(1.02);
+  }
+  100% {
+    transform: translate3d(-1.1%, 1.1%, 0) scale(1.01);
+  }
+}
+
+@media (max-width: 920px) {
+  .bubble-particle {
+    display: none;
+  }
+}
