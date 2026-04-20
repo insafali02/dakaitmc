@@ -3,9 +3,11 @@ import Image from "next/image";
 
 import { Reveal } from "@/components/sections/reveal";
 import { PixelGallery, type PixelItem } from "@/components/sections/pixel-gallery";
+import { ServerPresenceLive } from "@/components/sections/server-presence-live";
 import { SectionTitle } from "@/components/sections/section-title";
 import { getAnnouncements, getRanks, getSiteSettings, getTags, getVisualFeedItems } from "@/lib/data/public";
 import { formatPkr, settingValue } from "@/lib/utils";
+import { fetchJavaServerStatus } from "@/lib/server-status";
 
 export default async function HomePage() {
   const [settings, ranks, announcements, tags, visualFeedItems] = await Promise.all([
@@ -17,7 +19,8 @@ export default async function HomePage() {
   ]);
 
   const discordUrl = settingValue(settings, "discord_url", "https://discord.gg/dakaitmc");
-  const serverIp = settingValue(settings, "server_ip", "play.dakaitmc.net");
+  const serverIp = settingValue(settings, "server_ip", "dakaitmc.fun");
+  const initialServerStatus = await fetchJavaServerStatus(serverIp);
   const sceneShots: PixelItem[] = visualFeedItems.map((item, index) => ({
     src: item.image_path || "/media/minecraft/dungeons-main.png",
     title: item.title,
@@ -94,19 +97,7 @@ export default async function HomePage() {
                   <dt className="text-[0.63rem] uppercase tracking-[0.18em] text-sand/55">Server IP</dt>
                   <dd className="mt-1 font-mono text-base text-white">{serverIp}</dd>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-sm border border-amber-200/10 bg-black/20 p-3">
-                    <dt className="text-[0.6rem] uppercase tracking-[0.14em] text-sand/55">Status</dt>
-                    <dd className="mt-2 inline-flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-emerald-300">
-                      <span className="size-2 rounded-full bg-emerald-400" />
-                      Online
-                    </dd>
-                  </div>
-                  <div className="rounded-sm border border-amber-200/10 bg-black/20 p-3">
-                    <dt className="text-[0.6rem] uppercase tracking-[0.14em] text-sand/55">Heat Index</dt>
-                    <dd className="mt-2 text-sm text-amber-200">High Conflict</dd>
-                  </div>
-                </div>
+                <ServerPresenceLive initialStatus={initialServerStatus} />
                 <div>
                   <dt className="text-[0.6rem] uppercase tracking-[0.14em] text-sand/55">Top Ranks</dt>
                   <dd className="mt-2 flex flex-wrap gap-2">
