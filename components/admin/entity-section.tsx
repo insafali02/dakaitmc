@@ -241,6 +241,8 @@ function RowEditor({
 }) {
   const [draft, setDraft] = useState<Record<string, unknown>>(row);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadNotice, setUploadNotice] = useState<string | null>(null);
 
   useEffect(() => {
     setDraft(row);
@@ -248,6 +250,7 @@ function RowEditor({
 
   async function save() {
     setSaving(true);
+    setUploadNotice(null);
     try {
       const payload = Object.fromEntries(
         fields.map((field) => [field.key, parseByField(field, draft[field.key])])
@@ -312,17 +315,33 @@ function RowEditor({
               draft[field.key],
               (next) => setDraft((current) => ({ ...current, [field.key]: next })),
               async (file) => {
-                const path = await onUpload(table, file);
-                setDraft((current) => ({ ...current, [field.key]: path }));
+                setUploading(true);
+                setUploadNotice(null);
+                try {
+                  const path = await onUpload(table, file);
+                  setDraft((current) => ({ ...current, [field.key]: path }));
+
+                  // Image field uploads are applied immediately so users do not lose changes.
+                  if (field.key === "image_path") {
+                    await onUpdate(table, row.id, { image_path: path });
+                    setUploadNotice("Image uploaded and saved.");
+                  }
+                } catch (error) {
+                  setUploadNotice(error instanceof Error ? error.message : "Image upload failed.");
+                } finally {
+                  setUploading(false);
+                }
               }
             )}
           </label>
         ))}
       </div>
 
+      {uploadNotice ? <p className="mt-3 text-xs text-sand/75">{uploadNotice}</p> : null}
+
       <button
         type="button"
-        disabled={busy || saving}
+        disabled={busy || saving || uploading}
         onClick={save}
         className="mt-4 rounded-sm border border-ember bg-ember/20 px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-sand transition hover:bg-ember/35 disabled:opacity-60"
       >
@@ -375,7 +394,7 @@ export function EntitySection({
   const selectedRow = selectedId ? rows.find((row) => row.id === selectedId) || null : null;
 
   return (
-    <section className="rounded-md border border-white/10 bg-black/20 p-5">
+    <section className="admin-shell p-5">
       <button
         type="button"
         onClick={() => setExpanded((prev) => !prev)}
@@ -389,7 +408,7 @@ export function EntitySection({
 
       {expanded ? (
         <div className="mt-5 space-y-4">
-          <div className="rounded-md border border-ember/30 bg-ember/10 p-4">
+          <div className="rounded-md border border-ember/35 bg-ember/10 p-4">
             <p className="mb-3 text-xs uppercase tracking-[0.13em] text-sand/70">Create New</p>
             <div className="grid gap-3 md:grid-cols-2">
               {fields.map((field) => (
@@ -449,9 +468,12 @@ export function EntitySection({
                       key={row.id}
                       type="button"
                       onClick={() => setSelectedId(row.id)}
-                      className="flex w-full items-center justify-between rounded-sm border border-white/15 bg-black/20 px-3 py-3 text-left transition hover:border-ember/45"
+                      className="grid w-full grid-cols-[1fr_auto_auto] items-center gap-3 rounded-sm border border-white/15 bg-black/30 px-3 py-3 text-left transition hover:border-ember/45"
                     >
                       <span className="text-sm font-semibold text-sand">{rowLabel(row)}</span>
+                      <span className="text-[0.64rem] uppercase tracking-[0.12em] text-sand/55">
+                        #{row.sort_order} | {row.is_published ? "Published" : "Draft"}
+                      </span>
                       <span className="text-xs uppercase tracking-[0.12em] text-sand/60">Open</span>
                     </button>
                   ))}

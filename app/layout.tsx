@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Alegreya, Cinzel, Rye, Space_Mono } from "next/font/google";
+import { Bebas_Neue, Exo_2, Sora, Space_Mono } from "next/font/google";
 
 import "./globals.css";
 
@@ -8,22 +8,22 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { LiveAtmosphere } from "@/components/layout/live-atmosphere";
 import { getSiteSettings } from "@/lib/data/public";
 
-const heading = Rye({
+const heading = Bebas_Neue({
   subsets: ["latin"],
   variable: "--font-heading",
   weight: "400"
 });
 
-const body = Alegreya({
+const body = Exo_2({
   subsets: ["latin"],
   variable: "--font-body",
   weight: ["400", "500", "600", "700"]
 });
 
-const display = Cinzel({
+const display = Sora({
   subsets: ["latin"],
   variable: "--font-display",
-  weight: ["500", "600", "700"]
+  weight: ["500", "600", "700", "800"]
 });
 
 const mono = Space_Mono({

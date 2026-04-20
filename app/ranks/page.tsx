@@ -1,46 +1,101 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 
 import { PixelGallery, type PixelItem } from "@/components/sections/pixel-gallery";
 import { Reveal } from "@/components/sections/reveal";
 import { SectionTitle } from "@/components/sections/section-title";
 import { getRankComparisonRows, getRanks, getSiteSettings } from "@/lib/data/public";
-import type { Rank } from "@/lib/types";
-import { booleanGlyph, cleanGlyphText, formatPkr, resolveActionUrl, settingValue } from "@/lib/utils";
+import type { Rank, RankComparisonRow } from "@/lib/types";
+import { cleanGlyphText, formatPkr, resolveActionUrl, resolveImageSrc, settingValue } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Dakait MC Ranks | FREE, VIP, ELITE, DEADLIEST, OBLIX",
   description:
-    "Compare Dakait MC ranks with full features matrix, prices, and kit details. View FREE, VIP, ELITE, DEADLIEST, and OBLIX perks."
+    "Explore Dakait MC rank cards with editable features, prices, and perks. View FREE, VIP, ELITE, DEADLIEST, and OBLIX."
 };
 
-const commandFields: Array<{ label: string; key: keyof Rank }> = [
-  { label: "/craft", key: "craft" },
-  { label: "/recipe", key: "recipe" },
-  { label: "/disposal", key: "disposal" },
-  { label: "/near", key: "near" },
-  { label: "/hat", key: "hat" },
-  { label: "/feed", key: "feed" },
-  { label: "/invsee", key: "invsee" },
-  { label: "/enderchest", key: "enderchest" },
-  { label: "/ptime", key: "ptime" },
-  { label: "/pweather", key: "pweather" }
-];
+const rankFieldByCode = {
+  FREE: "free_value",
+  VIP: "vip_value",
+  ELITE: "elite_value",
+  DEADLIEST: "deadliest_value",
+  OBLIX: "oblix_value"
+} as const;
 
-const CHECK = "\u2713";
-const CROSS = "\u2717";
+type RankCode = keyof typeof rankFieldByCode;
 
-function textValue(
-  value: string | null | undefined,
-  enabled: boolean,
-  showDisabledValue = false
-) {
-  if (!value) return CROSS;
+const rankBackdropByCode: Record<string, string> = {
+  FREE: "/media/minecraft/dungeons-camp-day.png",
+  VIP: "/media/minecraft/dungeons-main.png",
+  ELITE: "/media/minecraft/dungeons-echoing-void.png",
+  DEADLIEST: "/media/minecraft/dungeons-flames-nether.png",
+  OBLIX: "/media/minecraft/dungeons-ultimate.png"
+};
 
-  const clean = cleanGlyphText(value);
-  if (enabled) return `${CHECK} ${clean}`;
-  if (showDisabledValue) return `${clean} ${CROSS}`;
-  return CROSS;
+function valueForRank(row: RankComparisonRow, rank: Rank) {
+  const code = String(rank.code || "").toUpperCase() as RankCode;
+  const field = rankFieldByCode[code];
+  if (!field) return "\u2717";
+  return cleanGlyphText(row[field] || "\u2717");
+}
+
+function parseFeatureValue(value: string) {
+  const clean = cleanGlyphText(value || "").trim();
+  if (!clean) return { status: "text" as const, label: "-", showLabel: true };
+
+  if (clean === "\u2713") {
+    return { status: "check" as const, label: "", showLabel: false };
+  }
+
+  if (clean === "\u2717") {
+    return { status: "cross" as const, label: "", showLabel: false };
+  }
+
+  if (clean.startsWith("\u2713")) {
+    const tail = clean.slice(1).trim();
+    const generic = /^(enabled|yes|true)$/i.test(tail);
+    return { status: "check" as const, label: generic ? "" : tail, showLabel: !generic && Boolean(tail) };
+  }
+
+  if (clean.startsWith("\u2717")) {
+    const tail = clean.slice(1).trim();
+    const generic = /^(disabled|no|false|none|na|n\/a)$/i.test(tail);
+    return { status: "cross" as const, label: generic ? "" : tail, showLabel: !generic && Boolean(tail) };
+  }
+
+  if (/disabled/i.test(clean)) {
+    return { status: "cross" as const, label: "", showLabel: false };
+  }
+
+  if (/enabled/i.test(clean)) {
+    return { status: "check" as const, label: "", showLabel: false };
+  }
+
+  return { status: "text" as const, label: clean, showLabel: true };
+}
+
+function resolvePrimaryCtaLabel(rank: Rank) {
+  const raw = (rank.cta_label || "").trim();
+  if (!raw || /^\d+$/.test(raw)) {
+    return String(rank.code || "").toUpperCase() === "FREE" ? "Join Discord" : "Buy Now";
+  }
+  return raw;
+}
+
+function rankBackdrop(rank: Rank, index: number) {
+  if (rank.image_path) return resolveImageSrc(rank.image_path);
+
+  const code = String(rank.code || "").toUpperCase();
+  if (rankBackdropByCode[code]) return rankBackdropByCode[code];
+
+  const pool = [
+    "/media/minecraft/dungeons-main.png",
+    "/media/minecraft/dungeons-howling-peaks.png",
+    "/media/minecraft/minecraft-nether-update.png",
+    "/media/minecraft/minecraft-bedrock.png"
+  ];
+  return pool[index % pool.length];
 }
 
 export default async function RanksPage() {
@@ -51,6 +106,7 @@ export default async function RanksPage() {
   ]);
 
   const discordUrl = settingValue(settings, "discord_url", "https://discord.gg/dakaitmc");
+  const featureRows = rows.filter((row) => row.feature_name.trim().toLowerCase() !== "action");
   const rankScenes: PixelItem[] = [
     {
       src: "/media/minecraft/dungeons-echoing-void.png",
@@ -80,8 +136,8 @@ export default async function RanksPage() {
       <Reveal>
         <SectionTitle
           eyebrow="Power Ladder"
-          title="Rank Comparison"
-          subtitle="Compare every perk, command, and kit before choosing your tier."
+          title="Ranks"
+          subtitle="Choose your tier and review every perk from the live feature list."
         />
       </Reveal>
 
@@ -89,115 +145,64 @@ export default async function RanksPage() {
         <PixelGallery items={rankScenes} className="mb-7 xl:grid-cols-3" />
       </Reveal>
 
-      <Reveal delay={0.08}>
-        <div className="metal-panel overflow-x-auto rounded-md bg-black/25">
-          <table className="min-w-full border-collapse text-left text-sm">
-            <thead>
-              <tr className="border-b border-orange-200/15 text-xs uppercase tracking-[0.16em] text-sand/70">
-                <th className="px-4 py-4">Features</th>
-                {ranks.map((rank) => (
-                  <th key={rank.id} className="min-w-[170px] px-4 py-4">
-                    <p className="font-display text-2xl tracking-[0.06em] text-sand">{rank.title}</p>
-                    <p className="mt-1 text-[0.65rem] text-sand/60">
-                      {rank.invite_requirement || formatPkr(rank.price_pkr)}
-                    </p>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr key={row.id} className="border-b border-white/5 text-sand/85">
-                  <td className="px-4 py-3 text-xs uppercase tracking-[0.13em] text-sand/65">
-                    {row.feature_name}
-                  </td>
-                  <td className="px-4 py-3">{cleanGlyphText(row.free_value)}</td>
-                  <td className="px-4 py-3">{cleanGlyphText(row.vip_value)}</td>
-                  <td className="px-4 py-3">{cleanGlyphText(row.elite_value)}</td>
-                  <td className="px-4 py-3">{cleanGlyphText(row.deadliest_value)}</td>
-                  <td className="px-4 py-3">{cleanGlyphText(row.oblix_value)}</td>
-                </tr>
-              ))}
-              {rows.length === 0 ? (
-                <tr>
-                  <td className="px-4 py-4 text-sm text-sand/70" colSpan={6}>
-                    No comparison rows published yet.
-                  </td>
-                </tr>
-              ) : null}
-            </tbody>
-          </table>
-        </div>
-      </Reveal>
-
-      <section className="mt-14">
+      <section className="mt-6">
         <Reveal>
           <SectionTitle
             eyebrow="Rank Cards"
             title="Choose Your Tier"
-            subtitle="Edit values from admin and this section updates instantly."
+            subtitle="Add, remove, and edit rank features from Admin > Rank Features, and cards update instantly."
           />
         </Reveal>
         <div className="grid gap-5 lg:grid-cols-2">
           {ranks.map((rank, index) => (
             <Reveal key={rank.id} delay={index * 0.07}>
-              <article className="metal-panel rounded-md p-5">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <p className="text-[0.62rem] uppercase tracking-[0.17em] text-sand/60">
-                      {rank.subtitle || `${rank.title} RANK`}
-                    </p>
-                    <h3 className="mt-1 font-display text-4xl uppercase tracking-[0.06em] text-sand">
-                      {rank.title}
-                    </h3>
+              <article className="rank-card-v2">
+                <div className="rank-card-hero">
+                  <Image
+                    src={rankBackdrop(rank, index)}
+                    alt={rank.title}
+                    fill
+                    className="object-cover object-center"
+                  />
+                  <div className="rank-card-hero-overlay" />
+                  <span className="rank-card-badge">Tier {index + 1}</span>
+                  <div className="rank-card-headline">
+                    <p className="rank-card-subtitle">{rank.subtitle || `${rank.title} RANK`}</p>
+                    <h3 className="rank-card-title">{rank.title}</h3>
                   </div>
+                </div>
+
+                <div className="mt-3 flex items-end justify-between gap-3 border-b border-white/10 pb-2">
+                  <p className="text-[0.62rem] uppercase tracking-[0.14em] text-sand/70">Package Price</p>
                   <p className="text-lg font-semibold text-ember">
                     {rank.invite_requirement || formatPkr(rank.price_pkr)}
                   </p>
                 </div>
 
-                <ul className="mt-5 grid gap-2 text-sm text-sand/80 sm:grid-cols-2">
-                  <li className="flex justify-between gap-3 border-b border-white/5 py-1">
-                    <span className="text-xs uppercase tracking-[0.12em] text-sand/60">Chat Colour</span>
-                    <span>{textValue(rank.chat_colour, rank.code !== "FREE")}</span>
-                  </li>
-                  <li className="flex justify-between gap-3 border-b border-white/5 py-1">
-                    <span className="text-xs uppercase tracking-[0.12em] text-sand/60">Homes</span>
-                    <span>{textValue(rank.homes, rank.code !== "FREE", true)}</span>
-                  </li>
-                  <li className="flex justify-between gap-3 border-b border-white/5 py-1">
-                    <span className="text-xs uppercase tracking-[0.12em] text-sand/60">/vaults</span>
-                    <span>{rank.vaults ? cleanGlyphText(rank.vaults) : CROSS}</span>
-                  </li>
-                  <li className="flex justify-between gap-3 border-b border-white/5 py-1">
-                    <span className="text-xs uppercase tracking-[0.12em] text-sand/60">Auction Slots</span>
-                    <span>{textValue(rank.auction_slots, true)}</span>
-                  </li>
-
-                  {commandFields.map((field) => {
-                    const value = rank[field.key];
-                    const text =
-                      typeof value === "boolean"
-                        ? booleanGlyph(value)
-                        : typeof value === "string"
-                          ? cleanGlyphText(value)
-                          : value === null || value === undefined
-                            ? CROSS
-                            : String(value);
+                <ul className="mt-4 space-y-1 text-sm text-sand/90">
+                  {featureRows.map((row) => {
+                    const parsed = parseFeatureValue(valueForRank(row, rank));
                     return (
-                      <li key={field.label} className="flex justify-between gap-3 border-b border-white/5 py-1">
-                        <span className="text-xs uppercase tracking-[0.12em] text-sand/60">
-                          {field.label}
+                      <li key={`${rank.id}-${row.id}`} className="rank-feature-row">
+                        <span className="rank-feature-key">{row.feature_name}</span>
+                        <span className="rank-feature-value">
+                          {parsed.status === "check" ? (
+                            <span className="glyph-badge glyph-badge-check">{"\u2713"}</span>
+                          ) : null}
+                          {parsed.status === "cross" ? (
+                            <span className="glyph-badge glyph-badge-cross">{"\u2717"}</span>
+                          ) : null}
+                          {parsed.showLabel ? <span>{parsed.label}</span> : null}
                         </span>
-                        <span>{text}</span>
                       </li>
                     );
                   })}
-
-                  <li className="flex justify-between gap-3 border-b border-white/5 py-1">
-                    <span className="text-xs uppercase tracking-[0.12em] text-sand/60">Kit</span>
-                    <span>{rank.kit_name ? cleanGlyphText(rank.kit_name) : CROSS}</span>
-                  </li>
+                  {featureRows.length === 0 ? (
+                    <li className="rank-feature-row">
+                      <span className="rank-feature-key">Features</span>
+                      <span className="rank-feature-value">No features published yet.</span>
+                    </li>
+                  ) : null}
                 </ul>
 
                 <div className="mt-5 flex flex-wrap gap-3">
@@ -205,7 +210,7 @@ export default async function RanksPage() {
                     href={resolveActionUrl(rank.cta_url, discordUrl)}
                     className="rounded-sm border border-ember bg-ember/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-sand shadow-[0_0_20px_rgba(236,114,50,0.2)] transition hover:bg-ember/35"
                   >
-                    {rank.cta_label}
+                    {resolvePrimaryCtaLabel(rank)}
                   </Link>
                   <Link
                     href={discordUrl}

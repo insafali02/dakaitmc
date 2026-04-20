@@ -19,7 +19,13 @@ const badCheckGlyph = "\u00e2\u0153\u201c";
 const badCrossGlyph = "\u00e2\u0153\u2014";
 
 export function cleanGlyphText(value: string) {
-  return value.replaceAll(badCheckGlyph, "\u2713").replaceAll(badCrossGlyph, "\u2717");
+  return value
+    .replaceAll(badCheckGlyph, "\u2713")
+    .replaceAll(badCrossGlyph, "\u2717")
+    .replace(/\\u2713/gi, "\u2713")
+    .replace(/\\u2717/gi, "\u2717")
+    .replace(/\bu2713\b/gi, "\u2713")
+    .replace(/\bu2717\b/gi, "\u2717");
 }
 
 export function formatPkr(value: number | null) {

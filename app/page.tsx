@@ -164,7 +164,7 @@ export default async function HomePage() {
         <div className="grid gap-4 md:grid-cols-3">
           {ranks.slice(1, 4).map((rank, index) => (
             <Reveal key={rank.id} delay={index * 0.08}>
-              <article className="metal-panel grain-overlay rounded-md p-5">
+              <article className="rank-card grain-overlay">
                 <p className="text-[0.62rem] uppercase tracking-[0.16em] text-sand/65">Tier {index + 1}</p>
                 <p className="mt-1 font-display text-3xl uppercase tracking-[0.06em] text-sand">
                   {rank.title}

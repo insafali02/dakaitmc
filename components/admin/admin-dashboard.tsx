@@ -14,6 +14,7 @@ import {
 
 const tableMap = {
   ranks: "ranks",
+  rank_comparison_rows: "rankComparisonRows",
   visual_feed_items: "visualFeedItems",
   store_categories: "storeCategories",
   store_items: "storeItems",
@@ -29,6 +30,7 @@ type AdminTab =
   | "server"
   | "visualFeed"
   | "ranks"
+  | "rankFeatures"
   | "store"
   | "faq"
   | "announcements"
@@ -42,6 +44,7 @@ const tabs: Array<{ id: AdminTab; label: string; hint: string }> = [
   { id: "server", label: "Server", hint: "IP + Discord link" },
   { id: "visualFeed", label: "Visual Feed", hint: "Home feed cards" },
   { id: "ranks", label: "Ranks", hint: "Rank cards" },
+  { id: "rankFeatures", label: "Rank Features", hint: "Add/remove perks rows" },
   { id: "store", label: "Store", hint: "Categories + items + kits" },
   { id: "staff", label: "Staff", hint: "Owner / Helper / Moderator" },
   { id: "faq", label: "FAQ", hint: "Questions and answers" },
@@ -211,29 +214,25 @@ export function AdminDashboard({
     { key: "subtitle", label: "Subtitle", type: "text" },
     { key: "price_pkr", label: "Price (PKR)", type: "number" },
     { key: "invite_requirement", label: "Invite Requirement", type: "text" },
-    { key: "chat_colour", label: "Chat Colour", type: "text" },
-    { key: "homes", label: "Homes", type: "text" },
-    { key: "vaults", label: "/vaults", type: "text" },
-    { key: "auction_slots", label: "Auction Slots", type: "text" },
-    { key: "craft", label: "/craft", type: "boolean" },
-    { key: "recipe", label: "/recipe", type: "boolean" },
-    { key: "disposal", label: "/disposal", type: "boolean" },
-    { key: "near", label: "/near", type: "boolean" },
-    { key: "hat", label: "/hat", type: "boolean" },
-    { key: "feed", label: "/feed", type: "boolean" },
-    { key: "invsee", label: "/invsee", type: "boolean" },
-    { key: "enderchest", label: "/enderchest", type: "boolean" },
-    { key: "ptime", label: "/ptime", type: "boolean" },
-    { key: "pweather", label: "/pweather", type: "boolean" },
     { key: "kit_name", label: "Kit Name", type: "text" },
     { key: "cta_label", label: "CTA Label", type: "text", required: true },
-    { key: "cta_url", label: "CTA URL", type: "text" }
+    { key: "cta_url", label: "CTA URL", type: "text" },
+    { key: "image_path", label: "Image Path", type: "text" }
   ];
 
   const visualFeedFields: FieldConfig[] = [
     { key: "title", label: "Card Name", type: "text", required: true },
     { key: "subtitle", label: "Description", type: "text" },
     { key: "image_path", label: "Image Path", type: "text" }
+  ];
+
+  const rankFeatureFields: FieldConfig[] = [
+    { key: "feature_name", label: "Feature Name", type: "text", required: true },
+    { key: "free_value", label: "FREE", type: "text", required: true },
+    { key: "vip_value", label: "VIP", type: "text", required: true },
+    { key: "elite_value", label: "ELITE", type: "text", required: true },
+    { key: "deadliest_value", label: "DEADLIEST", type: "text", required: true },
+    { key: "oblix_value", label: "OBLIX", type: "text", required: true }
   ];
 
   const storeCategoryFields: FieldConfig[] = [
@@ -249,7 +248,8 @@ export function AdminDashboard({
     { key: "description", label: "Description", type: "textarea" },
     { key: "price_pkr", label: "Price (PKR)", type: "number", required: true },
     { key: "cta_label", label: "CTA Label", type: "text", required: true },
-    { key: "cta_url", label: "CTA URL", type: "text" }
+    { key: "cta_url", label: "CTA URL", type: "text" },
+    { key: "image_path", label: "Card Image", type: "text" }
   ];
 
   const faqFields: FieldConfig[] = [
@@ -281,7 +281,7 @@ export function AdminDashboard({
 
   return (
     <div className="section-shell py-8">
-      <div className="mb-6 rounded-md border border-ember/35 bg-black/40 p-4">
+      <div className="admin-shell mb-6 p-4">
         <h1 className="font-heading text-4xl uppercase tracking-[0.12em] text-sand">Dakait Admin Panel</h1>
         <p className="mt-2 text-sm text-sand/75">
           Signed in as <span className="font-mono">{userEmail}</span>.
@@ -289,8 +289,8 @@ export function AdminDashboard({
         {notice ? <p className="mt-2 text-sm text-emerald-300">{notice}</p> : null}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[240px_minmax(0,1fr)]">
-        <aside className="metal-panel rounded-md p-3">
+      <div className="grid gap-6 lg:grid-cols-[250px_minmax(0,1fr)]">
+        <aside className="admin-shell">
           <p className="mb-2 px-2 text-[0.62rem] uppercase tracking-[0.16em] text-sand/60">Sections</p>
           <div className="space-y-1">
             {tabs.map((tab) => (
@@ -313,7 +313,7 @@ export function AdminDashboard({
 
         <section className="space-y-4">
           {activeTab === "server" ? (
-            <article className="metal-panel rounded-md p-5">
+            <article className="admin-shell p-5">
               <h2 className="font-heading text-3xl uppercase tracking-[0.1em] text-sand">Server Settings</h2>
               <p className="mt-2 text-sm text-sand/70">
                 Update server IP and Discord invite. Store and rank Buy Now buttons will use this Discord link by default.
@@ -365,6 +365,22 @@ export function AdminDashboard({
             />
           ) : null}
 
+          {activeTab === "rankFeatures" ? (
+            <EntitySection
+              title="Rank Features"
+              table="rank_comparison_rows"
+              rows={asEditableRows(data.rankComparisonRows)}
+              fields={rankFeatureFields}
+              listDetail
+              busy={busy}
+              onCreate={createRecord}
+              onUpdate={updateRecord}
+              onDelete={deleteRecord}
+              onMove={moveRecord}
+              onUpload={uploadImage}
+            />
+          ) : null}
+
           {activeTab === "visualFeed" ? (
             <EntitySection
               title="Server Visual Feed"
@@ -387,6 +403,7 @@ export function AdminDashboard({
                 table="store_categories"
                 rows={asEditableRows(data.storeCategories)}
                 fields={storeCategoryFields}
+                listDetail
                 busy={busy}
                 onCreate={createRecord}
                 onUpdate={updateRecord}
@@ -399,6 +416,7 @@ export function AdminDashboard({
                 table="store_items"
                 rows={asEditableRows(data.storeItems)}
                 fields={storeItemFields}
+                listDetail
                 busy={busy}
                 onCreate={createRecord}
                 onUpdate={updateRecord}

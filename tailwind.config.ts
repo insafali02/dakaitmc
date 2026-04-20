@@ -10,8 +10,8 @@ const config: Config = {
     extend: {
       fontFamily: {
         heading: ["var(--font-heading)", "sans-serif"],
-        display: ["var(--font-display)", "serif"],
-        body: ["var(--font-body)", "serif"],
+        display: ["var(--font-display)", "sans-serif"],
+        body: ["var(--font-body)", "sans-serif"],
         mono: ["var(--font-mono)", "monospace"]
       },
       colors: {
