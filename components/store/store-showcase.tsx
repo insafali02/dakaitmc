@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
+import { DiscordTicketGateLink } from "@/components/common/discord-ticket-gate-link";
 import type { StoreCategory, StoreItem } from "@/lib/types";
 import { resolveActionUrl, resolveImageSrc } from "@/lib/utils";
 
@@ -211,12 +212,12 @@ export function StoreShowcase({ categories, items, discordUrl }: StoreShowcasePr
                         <p className="store-redesign-old-price">{old} PKR</p>
                         <p className="store-redesign-new-price">{item.price_pkr} PKR</p>
                       </div>
-                      <Link
+                      <DiscordTicketGateLink
                         href={resolveActionUrl(item.cta_url, discordUrl)}
+                        label={item.cta_label || "Buy Now"}
+                        gate={/buy\s*now/i.test(item.cta_label || "Buy Now")}
                         className="store-redesign-buy-btn"
-                      >
-                        {item.cta_label || "Buy Now"}
-                      </Link>
+                      />
                     </div>
                   </div>
                 </article>

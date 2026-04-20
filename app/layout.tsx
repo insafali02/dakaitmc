@@ -6,6 +6,7 @@ import "./globals.css";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { LiveAtmosphere } from "@/components/layout/live-atmosphere";
+import { RouteTransitionLoader } from "@/components/layout/route-transition-loader";
 import { getSiteSettings } from "@/lib/data/public";
 
 const heading = Bebas_Neue({
@@ -59,6 +60,7 @@ export default async function RootLayout({
       >
         <div className="battlefield-surface relative min-h-screen overflow-x-clip">
           <LiveAtmosphere />
+          <RouteTransitionLoader />
           <div className="relative z-10">
             <SiteHeader settings={settings} />
             <main>{children}</main>

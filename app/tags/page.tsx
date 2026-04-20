@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { DiscordTicketGateLink } from "@/components/common/discord-ticket-gate-link";
 import { PixelGallery, type PixelItem } from "@/components/sections/pixel-gallery";
 import { Reveal } from "@/components/sections/reveal";
 import { SectionTitle } from "@/components/sections/section-title";
@@ -61,12 +62,12 @@ export default async function TagsPage() {
                 <p className="text-lg font-semibold text-ember">
                   {tag.price_pkr ? `${tag.price_pkr} PKR` : "Free"}
                 </p>
-                <Link
+                <DiscordTicketGateLink
                   href={tag.cta_url || storeUrl}
+                  label={tag.cta_label}
+                  gate={/buy\s*now/i.test(tag.cta_label || "")}
                   className="rounded-sm border border-ember bg-ember/20 px-3 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-sand shadow-[0_0_20px_rgba(236,114,50,0.2)] transition hover:bg-ember/35"
-                >
-                  {tag.cta_label}
-                </Link>
+                />
               </div>
             </article>
           </Reveal>

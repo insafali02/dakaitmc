@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
+import { DiscordTicketGateLink } from "@/components/common/discord-ticket-gate-link";
 import { PixelGallery, type PixelItem } from "@/components/sections/pixel-gallery";
 import { Reveal } from "@/components/sections/reveal";
 import { SectionTitle } from "@/components/sections/section-title";
@@ -154,7 +155,12 @@ export default async function RanksPage() {
           />
         </Reveal>
         <div className="grid gap-5 lg:grid-cols-2">
-          {ranks.map((rank, index) => (
+          {ranks.map((rank, index) => {
+            const primaryLabel = resolvePrimaryCtaLabel(rank);
+            const primaryHref = resolveActionUrl(rank.cta_url, discordUrl);
+            const shouldGatePrimary = /buy\s*now/i.test(primaryLabel);
+
+            return (
             <Reveal key={rank.id} delay={index * 0.07}>
               <article className="rank-card-v2">
                 <div className="rank-card-hero">
@@ -206,12 +212,12 @@ export default async function RanksPage() {
                 </ul>
 
                 <div className="mt-5 flex flex-wrap gap-3">
-                  <Link
-                    href={resolveActionUrl(rank.cta_url, discordUrl)}
+                  <DiscordTicketGateLink
+                    href={primaryHref}
+                    label={primaryLabel}
+                    gate={shouldGatePrimary}
                     className="rounded-sm border border-ember bg-ember/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-sand shadow-[0_0_20px_rgba(236,114,50,0.2)] transition hover:bg-ember/35"
-                  >
-                    {resolvePrimaryCtaLabel(rank)}
-                  </Link>
+                  />
                   <Link
                     href={discordUrl}
                     className="rounded-sm border border-white/25 px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-sand transition hover:border-sand hover:bg-white/10"
@@ -221,7 +227,8 @@ export default async function RanksPage() {
                 </div>
               </article>
             </Reveal>
-          ))}
+            );
+          })}
           {ranks.length === 0 ? <p className="text-sm text-sand/70">No ranks published yet.</p> : null}
         </div>
       </section>
