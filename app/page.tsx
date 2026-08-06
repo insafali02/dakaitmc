@@ -18,7 +18,7 @@ export default async function HomePage() {
     getVisualFeedItems()
   ]);
 
-  const discordUrl = settingValue(settings, "discord_url", "https://discord.gg/dakaitmc");
+  const discordUrl = settingValue(settings, "discord_url", "https://discord.gg/perhaps");
   const serverIp = settingValue(settings, "server_ip", "dakaitmc.fun");
   const initialServerStatus = await fetchJavaServerStatus(serverIp);
   const sceneShots: PixelItem[] = visualFeedItems.map((item, index) => ({
@@ -84,7 +84,7 @@ export default async function HomePage() {
               <div className="pixel-frame pixel-tone-blue mb-5 overflow-hidden rounded-sm border">
                 <Image
                   src="/media/minecraft/dungeons-camp-day.png"
-                  alt="Dakait MC Command Outpost"
+                  alt="Paradise SMP Command Outpost"
                   width={1024}
                   height={576}
                   className="h-44 w-full bg-black object-cover"
