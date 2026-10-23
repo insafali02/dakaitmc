@@ -35,7 +35,7 @@ export default async function FaqPage() {
         <SectionTitle
           eyebrow="Quick Intel"
           title="FAQ"
-          subtitle="Answers for joining, buying, and progressing through Dakait MC."
+          subtitle="Answers for joining, buying, and progressing through Paradise SMP."
         />
       </Reveal>
 
