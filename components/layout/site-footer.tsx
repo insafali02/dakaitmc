@@ -8,14 +8,14 @@ type SiteFooterProps = {
 };
 
 export function SiteFooter({ settings }: SiteFooterProps) {
-  const discordUrl = settingValue(settings, "discord_url", "https://discord.gg/dakaitmc");
-  const serverIp = settingValue(settings, "server_ip", "play.dakaitmc.net");
+  const discordUrl = settingValue(settings, "discord_url", "https://discord.gg/paradisesmp");
+  const serverIp = settingValue(settings, "server_ip", "paradisesmp.fun");
 
   return (
     <footer className="mt-24 border-t border-white/15 bg-black/40">
       <div className="section-shell grid gap-8 py-12 md:grid-cols-3">
         <div>
-          <p className="font-heading text-3xl uppercase tracking-[0.12em] text-sand">Dakait MC</p>
+          <p className="font-heading text-3xl uppercase tracking-[0.12em] text-sand">Paradise SMP</p>
           <p className="mt-3 max-w-xs text-sm text-frost/75">
             Brutal economy. Outlaw politics. Bandit-style survival with real stakes.
           </p>
