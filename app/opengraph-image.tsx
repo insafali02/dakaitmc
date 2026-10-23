@@ -43,7 +43,7 @@ export default function OpenGraphImage() {
               fontWeight: 700
             }}
           >
-            Dakait MC
+            Paradise SMP
           </div>
           <div style={{ fontSize: 34, opacity: 0.84 }}>
             Ranks, Tags, and Bandit-Style Survival
