@@ -230,9 +230,9 @@ export function AdminDashboard({
     { key: "feature_name", label: "Feature Name", type: "text", required: true },
     { key: "free_value", label: "FREE", type: "text", required: true },
     { key: "vip_value", label: "VIP", type: "text", required: true },
-    { key: "supreme_value", label: "Supreme Rank", type: "text", required: true },
-    { key: "prime_value", label: "Prime Rank", type: "text", required: true },
-    { key: "paradise_value", label: "Paradise Rank", type: "text", required: true }
+    { key: "elite_value", label: "ELITE", type: "text", required: true },
+    { key: "matrix_value", label: "MATRIX", type: "text", required: true },
+    { key: "oblix_value", label: "OBLIX", type: "text", required: true }
   ];
 
   const storeCategoryFields: FieldConfig[] = [
