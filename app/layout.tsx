@@ -35,11 +35,11 @@ const mono = Space_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
-  title: "Dakait MC | Outlaw Minecraft Server",
+  title: "PARADISE SMP | Outlaw Minecraft Server",
   description:
-    "Dakait MC is a cinematic outlaw-style Minecraft survival server with premium ranks, tags, and a brutal economy.",
+    "Paradise SMP is a cinematic outlaw-style Minecraft survival server with premium ranks, tags, and a brutal economy.",
   openGraph: {
-    title: "Dakait MC",
+    title: "PARADISE SMP",
     description:
       "Outlaw-styled Minecraft survival with ranks, tags, and high-stakes progression.",
     images: ["/opengraph-image"]
