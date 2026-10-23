@@ -18,7 +18,7 @@ const links = [
 ];
 
 export function SiteHeader({ settings }: SiteHeaderProps) {
-  const discordUrl = settingValue(settings, "discord_url", "https://discord.gg/dakaitmc");
+  const discordUrl = settingValue(settings, "discord_url", "https://discord.gg/paradisesmp");
   const ctaText = settingValue(settings, "primary_cta", "Join the Outlaws");
 
   return (
@@ -30,7 +30,7 @@ export function SiteHeader({ settings }: SiteHeaderProps) {
         >
           <span className="text-[0.58rem] uppercase tracking-[0.3em] text-frost/70">Wasteland Network</span>
           <span className="font-heading text-3xl uppercase tracking-[0.12em] text-sand transition group-hover:text-white">
-            Dakait MC
+            Paradise SMP
           </span>
         </Link>
 
