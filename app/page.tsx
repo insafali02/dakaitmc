@@ -19,7 +19,7 @@ export default async function HomePage() {
   ]);
 
   const discordUrl = settingValue(settings, "discord_url", "https://discord.gg/perhaps");
-  const serverIp = settingValue(settings, "server_ip", "dakaitmc.fun");
+  const serverIp = settingValue(settings, "server_ip", "paradisesmp.fun");
   const initialServerStatus = await fetchJavaServerStatus(serverIp);
   const sceneShots: PixelItem[] = visualFeedItems.map((item, index) => ({
     src: item.image_path || "/media/minecraft/dungeons-main.png",
@@ -46,12 +46,12 @@ export default async function HomePage() {
         <div className="section-shell relative grid min-h-[calc(100svh-5rem)] items-center gap-16 py-16 md:grid-cols-[1.15fr_0.85fr]">
           <Reveal>
             <p className="text-[0.65rem] uppercase tracking-[0.24em] text-sand/70">
-              Dakait Protocol // Season: Dustfall Uprising
+              Paradise Protocol // Season: Dustfall Uprising
             </p>
             <h1 className="mt-4 font-heading text-[3.4rem] uppercase leading-[0.94] tracking-[0.07em] text-sand md:text-[6.3rem]">
-              Dakait
+              Paradise
               <br />
-              MC
+              SMP
             </h1>
             <p className="mt-5 max-w-xl text-base text-sand/80 md:text-xl">
               Not a friendly SMP. This is outlaw territory where ranks control movement, kits
@@ -128,7 +128,7 @@ export default async function HomePage() {
           <SectionTitle
             eyebrow="Live Broadcast"
             title="Server Visual Feed"
-            subtitle="Real Minecraft captures from critical Dakait zones and events."
+            subtitle="Real Minecraft captures from critical Paeadise zones and events."
           />
         </Reveal>
         <Reveal delay={0.08}>
